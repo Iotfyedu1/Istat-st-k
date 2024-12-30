@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İstatistik Macera Oyunu</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #e0f7fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .scene {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .scene img {
+            max-width: 150px;
+            border-radius: 50%;
+        }
+
+        .dialogue {
+            max-width: 500px;
+            background: #f1f8e9;
+            border: 2px solid #c8e6c9;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .question {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .options button {
+            margin-top: 10px;
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+        }
+
+        .options button:hover {
+            background-color: #0056b3;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .next {
+            margin-top: 20px;
+            display: none;
+            text-align: center;
+        }
+
+        .next button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #28a745;
+            color: white;
+        }
+
+        .next button:hover {
+            background-color: #218838;
+        }
+
+        .start {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .start button {
+            padding: 10px 20px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            background-color: #ff9800;
+            color: white;
+            cursor: pointer;
+        }
+
+        .start button:hover {
+            background-color: #e68900;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="scene" id="scene">
+            <img src="images/ciftci.png" alt="Köylü" id="villager">
+            <div class="dialogue" id="dialogue">
+                DataLand'a hoş geldiniz! Burası, barış ve huzurun hüküm sürdüğü, ancak son zamanlarda zorluklarla başa çıkmaya çalışan bir köy.
+                İklim değişiklikleri yüzünden mahsuller büyümüyor, su kaynakları azalıyor ve insanlar ne yapacaklarını bilemiyor.
+                Bilginiz ve yardımınızla köyümüzü kurtarabilir, tekrar eski güzel günlerimize dönebiliriz. Hazır mısınız?
+            </div>
+            <img src="images/hero.png" alt="Kahraman" id="hero">
+        </div>
+
+        <div class="start" id="start">
+            <button onclick="startGame()">Göreve Başla</button>
+        </div>
+
+        <div class="question" id="quiz"></div>
+        <div class="message" id="message"></div>
+        <div class="next" id="next">
+            <button onclick="nextQuestion()">Sonraki Görev</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "Görev 1: Köylüler, son dört gün boyunca yağan yağmurların miktarını not etmişler: (2, 4, 6, 8). Köyün su depolarını doğru planlamak için bu günlerdeki ortalama yağmur miktarını bulmamız gerekiyor.Hadi Bulalim!",
+                options: ["4", "5", "6", "7"],
+                answer: "5",
+                explanation: "Tüm günlerdeki miktarı topladık (2 + 4 + 6 + 8 = 20) ve gün sayısına böldük (4). Sonuç 5!",
+                dialogue: "Yağmurların ne kadar yağdığına dair bir ortalama bulmamız gerekiyor. Böylece ne kadar su saklamamız gerektiğini öğrenebiliriz!",
+                villagerImage: "images/ciftci.png",
+                heroImage: "images/hero.png"
+            },
+            {
+                question: "Görev 2: Köydeki mahsullerin boyları farklı farklı: (1, 3, 3, 6, 7, 8, 9). Köylüler hangi bitkilerin daha fazla korumaya ihtiyacı olduğunu öğrenmek istiyor. Bize ortadaki değeri bulur musunuz?",
+                options: ["3", "6", "7", "5"],
+                answer: "6",
+                explanation: "Bitkileri boylarına göre sıraladık ve ortadaki değeri seçtik. İşte bu yüzden cevap 6!",
+                dialogue: "Mahsullerimiz düzensiz büyüyor. Ortadaki değeri bulmamıza yardım edin ki, koruma önceliğimizi belirleyelim!",
+                villagerImage: "images/ciftci.png",
+                heroImage: "images/hero.png"
+            },
+            {
+                question: "Görev 3: Köylülerden bazıları aynı türden tohumları daha fazla ekmiş. Şimdi bu tohumların hangisinin en fazla ekildiğini bulmamız gerekiyor. Veriler şöyle: (2, 2, 2, 3, 3, 4, 5). Hangi sayı daha sık görülüyor?",
+                options: ["2", "3", "4", "5"],
+                answer: "2",
+                explanation: "En çok tekrar eden sayı 2. Bu yüzden cevap 2!",
+                dialogue: "Hangi tohumların daha çok ekildiğini öğrenirsek, kaynaklarımızı daha iyi planlayabiliriz!",
+                villagerImage: "images/ciftci.png",
+                heroImage: "images/hero.png"
+            },
+            {
+                question: "Görev 4: Köydeki günlük sıcaklık ölçümleri şöyle: (10, 15, 15, 18, 20, 22, 22, 25). Köydeki en sıcak ve en soğuk günleri bulmamız gerekiyor. Sizce hangi günlerde bu değerler var?",
+                options: ["En düşük: 10, En yüksek: 25", "En düşük: 15, En yüksek: 22", "En düşük: 10, En yüksek: 22", "En düşük: 15, En yüksek: 25"],
+                answer: "En düşük: 10, En yüksek: 25",
+                explanation: "En düşük sıcaklık 10, en yüksek sıcaklık ise 25 olarak ölçülmüştür.",
+                dialogue: "Köyün hava durumunu planlamak için en sıcak ve en soğuk günleri öğrenmemiz gerekiyor. Yardım eder misiniz?",
+                villagerImage: "images/ciftci.png",
+                heroImage: "images/hero.png"
+            },
+            {
+                question: "Görev 5: Köydeki hayvanlardan birkaçı, günlük yem miktarlarını farklı oranlarda tüketiyor. Tablodaki yem miktarları şöyle: (12, 14, 14, 14, 15, 17, 20). En sık tüketilen miktarı bulabilir misiniz?",
+                options: ["12", "14", "15", "17"],
+                answer: "14",
+                explanation: "Tabloda en sık görülen yem miktarı 14'tür. Bu nedenle cevap 14!",
+                dialogue: "Hayvanlarımızın günlük yem tüketimini anlamamız için hangi miktarın daha sık olduğunu bulmalıyız.",
+                villagerImage: "images/ciftci.png",
+                heroImage: "images/hero.png"
+            },
+            {
+                question: "Görev 6: Köydeki hasat, dört bölgeden toplanıyor. Toplanan miktarlar şu şekilde: (120, 150, 130, 140). Tüm köy için toplam hasat miktarını bulabilir misiniz?",
+                options: ["500", "540", "600", "550"],
+                answer: "540",
+                explanation: "Tüm bölgelerin hasat miktarını topladık: 120 + 150 + 130 + 140 = 540.",
+                dialogue: "Köyün toplam hasat miktarını bilmek, kaynaklarımızı daha iyi planlamamıza yardımcı olacak.",
+                villagerImage: "images/ciftci.png",
+                heroImage: "images/hero.png"
+            }
+        ];
+
+        let currentQuestion = 0;
+
+        function startGame() {
+            document.getElementById("scene").style.display = "none";
+            document.getElementById("start").style.display = "none";
+            showQuestion();
+            document.getElementById("quiz").style.display = "block";
+        }
+
+        function showQuestion() {
+            const quizDiv = document.getElementById("quiz");
+            const question = questions[currentQuestion];
+
+            quizDiv.innerHTML = `<h2>${question.question}</h2>`;
+            quizDiv.innerHTML += `<p><em>${question.dialogue}</em></p>`;
+
+            const options = question.options.map(option => {
+                return `<button onclick="checkAnswer('${option}')">${option}</button>`;
+            }).join("");
+
+            quizDiv.innerHTML += `<div class="options">${options}</div>`;
+        }
+
+        function checkAnswer(selected) {
+            const messageDiv = document.getElementById("message");
+            const nextDiv = document.getElementById("next");
+
+            if (selected === questions[currentQuestion].answer) {
+                messageDiv.innerHTML = `Doğru! ${questions[currentQuestion].explanation}`;
+                messageDiv.style.backgroundColor = "#d4edda";
+                messageDiv.style.color = "#155724";
+            } else {
+                messageDiv.innerHTML = `Yanlış! ${questions[currentQuestion].explanation}`;
+                messageDiv.style.backgroundColor = "#f8d7da";
+                messageDiv.style.color = "#721c24";
+            }
+
+            messageDiv.style.display = "block";
+            nextDiv.style.display = "block";
+        }
+
+        function nextQuestion() {
+            const messageDiv = document.getElementById("message");
+            const nextDiv = document.getElementById("next");
+
+            currentQuestion++;
+
+            if (currentQuestion < questions.length) {
+                showQuestion();
+                messageDiv.style.display = "none";
+                nextDiv.style.display = "none";
+            } else {
+                document.getElementById("quiz").innerHTML = `<h2>Tebrikler! Köylülerin mahsullerini kurtarmasına, su depolarını planlamasına ve daha iyi bir gelecek için hazırlanmasına yardım ettiniz. Siz gerçek bir kahramansınız!</h2>`;
+                messageDiv.style.display = "none";
+                nextDiv.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
